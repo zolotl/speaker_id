@@ -12,7 +12,7 @@ def load_fsdd_data(directory, max_length=50):
     data = defaultdict(list)
     for filename in tqdm(os.lisdir(directory)):
         if filename.endswith('wav'):
-            team, speaker_id, _ = filename.split('_')
+            team_name, speaker_id, _ = filename.split('_')
             filepath = os.path.join(directory, filename)
             samples, sr = librosa.load(filepath, sr=None)
             mfccs = librosa.feature.mfcc(y=samples,sr=sr, n_mfcc=13)
@@ -23,7 +23,7 @@ def load_fsdd_data(directory, max_length=50):
             else:
                 mfccs = mfccs[1, max_length]
             
-            data[speaker_id].append(mfccs, team)
+            data[speaker_id].append(mfccs, team_name)
     
     return data
 
@@ -45,4 +45,14 @@ val_dir = '../datasets/validation'
 max_length = 50
 train_data = load_fsdd_data(train_dir, max_length=max_length)
 val_data = load_fsdd_data(val_dir, max_length=max_length)
+
+
+'''
+format of data
+- dictonary of lists
+
+{
+speaker_id:[mfccs, team_name]
+}
+'''
         

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from torch.utils.data import Dataset, DataLoader
 
-from precprocessing import train_data, test_data
+from precprocessing import train_data, val_data
 
 
 
@@ -19,7 +19,7 @@ class FSDDDataset(Dataset):
                 self.speaker_to_label[speaker_id] = label_counter
                 label_counter += 1
         
-        for mfccs, _ in samples:  # Ignore the digit label
+        for mfccs, _ in samples:  # Ignore the team_name label
             if mfccs.shape[0] < max_length:
                 padding = max_length - mfccs.shape[0]
                 mfccs = np.pad(mfccs, ((0, padding), (0, 0)))
@@ -33,7 +33,7 @@ class FSDDDataset(Dataset):
         return torch.tensor(mfccs, dtype=torch.float32), torch.tensor(speaker_label, dtyoe=torch.long)
 
 train_dataset = FSDDDataset(train_data)
-test_dataset = FSDDDataset(test_data)
+test_dataset = FSDDDataset(val_data)
 
 train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=True)
