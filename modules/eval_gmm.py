@@ -1,7 +1,11 @@
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 from train_gmm import gmms
-from preprocessing import val_data
+
+from preprocessing import load_fsdd_data
+
+val_directory = "../datasets/processed/val"
+val_data = load_fsdd_data(val_directory, max_length=150)
 
 # Evaluate GMMs on test data
 def get_true_and_predicted_labels_gmm(gmms, test_data):

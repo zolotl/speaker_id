@@ -4,7 +4,10 @@ from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 
 
-from preprocessing import train_data
+from preprocessing import load_fsdd_data
+
+train_directory = "../datasets/processed/train"
+train_data = load_fsdd_data(train_directory, max_length=150)
 
 
 def train_gmms(train_data, n_components=16, normalize=True):

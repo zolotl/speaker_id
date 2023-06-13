@@ -66,9 +66,4 @@ def split_data(data, test_size=0.2):
 split_audio_data("../datasets/raw/train", audio_length=3, audio_overlap=1, start_sec=1)
 split_audio_data("../datasets/raw/val", audio_length=3, audio_overlap=1, start_sec=1)
 
-train_directory = "../datasets/processed/train"
-val_directory = "../datasets/processed/val"
-max_length = 150
-train_data = load_fsdd_data(train_directory, max_length=max_length)
-val_data = load_fsdd_data(val_directory, max_length=max_length)
         
