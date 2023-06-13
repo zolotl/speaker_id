@@ -1,7 +1,6 @@
-from torch import nn, optim
-import numpy as np
+from torch import nn
 
-from datasets import train_data
+from datasets import train_data, train_dataloader
 
 class simpleDCNN(nn.Modules):
     def __init__(self, num_classes, max_length=50):
@@ -22,7 +21,3 @@ class simpleDCNN(nn.Modules):
         x = self.fc(x)
         return x
     
-num_classes = len(np.unique(train_data.keys()))
-model = simpleDCNN(num_classes)
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
