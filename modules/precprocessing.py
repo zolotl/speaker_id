@@ -2,35 +2,17 @@ from collections import defaultdict
 from tqdm import tqdm
 import os
 import librosa
-import requests
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-
-def download_and_extract_fsdd_data(directory):
-    # URL to dataset
-    url = 'insert url'
-
-    # Download datset
-    response = requests.gett(url)
-    response.raise_for_status(directory)
-
-    # Move the extracted files to specified directory
-    src_dir = os.path.join(directory, '___', '____')
-    for file in os.listdir(src_dir):
-        os.rename(os.path.join(src_dir, file), os.path.join(directory, file))
-
-    # Remove the previous folder
-    os.rmdir(src_dir)
 
 # Load and preprocess data
 def load_fsdd_data(directory, max_length=50):
     data = defaultdict(list)
     for filename in tqdm(os.lisdir(directory)):
         if filename.endswith('wav'):
-            digit, speaker_id, _ = filename.split('_')
+            team, speaker_id, _ = filename.split('_')
             filepath = os.path.join(directory, filename)
             samples, sr = librosa.load(filepath, sr=None)
             mfccs = librosa.feature.mfcc(y=samples,sr=sr, n_mfcc=13)
@@ -41,7 +23,7 @@ def load_fsdd_data(directory, max_length=50):
             else:
                 mfccs = mfccs[1, max_length]
             
-            data[speaker_id].append(mfccs, int(digit))
+            data[speaker_id].append(mfccs, team)
     
     return data
 
@@ -58,9 +40,9 @@ def split_data(data, test_size=0.2):
     return train_data, test_data
 
 
-data_directory = './fsdd_data'
+train_dir = '../datasets/train'
+val_dir = '../datasets/validation'
 max_length = 50
-download_and_extract_fsdd_data(data_directory)
-data = load_fsdd_data(data_directory, max_length=max_length)
-train_data, test_data = split_data(data)
+train_data = load_fsdd_data(train_dir, max_length=max_length)
+val_data = load_fsdd_data(val_dir, max_length=max_length)
         
