@@ -66,4 +66,7 @@ def split_data(data, test_size=0.2):
 split_audio_data("../datasets/raw/train", audio_length=3, audio_overlap=1, start_sec=1)
 split_audio_data("../datasets/raw/val", audio_length=3, audio_overlap=1, start_sec=1)
 
+train_data = load_fsdd_data("../datasets/processed/train", max_length=150)
+val_data = load_fsdd_data("../datasets/processed/val", max_length=150)
+
         
