@@ -11,7 +11,7 @@ class simpleDCNN(nn.Module):
         self.conv2 = nn.Conv1d(32, 64, 3, padding=1)
         self.relu2 = nn.ReLU()
         self.pool2 = nn.MaxPool1d(2)
-        self.fc - nn.Linear(64 * 25, num_classes)
+        self.fc = nn.Linear(64 * 25, num_classes)
     
     def forward(self, x):
         x = x.transpose(1, 2) # swap frewuency and time dimensions

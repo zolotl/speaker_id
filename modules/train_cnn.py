@@ -3,11 +3,11 @@ from torch import nn, optim
 import torch
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-from datasets import train_dataset, train_dataloader, val_dataloader, speaker_label_map
+from datasets import train_data, train_dataloader, val_dataloader, speaker_label_map
 from model import simpleDCNN
 
 
-num_classes = len(np.unique(list(train_dataset.keys())))
+num_classes = len(np.unique(list(train_data.keys())))
 model = simpleDCNN(num_classes)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)

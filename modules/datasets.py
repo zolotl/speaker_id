@@ -7,9 +7,8 @@ from torch.utils.data import Dataset, DataLoader
 from preprocessing import train_data, val_data
 
 
-
 class FSDDDataset(Dataset):
-    def __init__(self, data, speaker_to_label, max_length=100):
+    def __init__(self, data, speaker_to_label, max_length=50):
         self.data = []
         self.speaker_to_label = {}
         self.speaker_to_label = speaker_to_label
