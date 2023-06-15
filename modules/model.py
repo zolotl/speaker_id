@@ -2,9 +2,9 @@ from torch import nn
 
 from datasets import train_data, train_dataloader
 
-class simpleDCNN(nn.Modules):
+class simpleDCNN(nn.Module):
     def __init__(self, num_classes, max_length=50):
-        super(simpleDCNN, self).__innit__()
+        super(simpleDCNN, self).__init__()
         self.conv1 = nn.Conv1d(max_length, 32, 3, padding=1)
         self.relu1 = nn.ReLU()
         self.pool1 = nn.MaxPool1d(2)
@@ -15,8 +15,8 @@ class simpleDCNN(nn.Modules):
     
     def forward(self, x):
         x = x.transpose(1, 2) # swap frewuency and time dimensions
-        x = self.pool1(self.relu(self.conv1(x)))
-        x = self.pool2(self.relu(self.conv2(x)))
+        x = self.pool1(self.relu1(self.conv1(x)))
+        x = self.pool2(self.relu2(self.conv2(x)))
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x

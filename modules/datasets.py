@@ -4,36 +4,45 @@ import matplotlib.pyplot as plt
 
 from torch.utils.data import Dataset, DataLoader
 
-from precprocessing import train_data, val_data
+from preprocessing import train_data, val_data
 
 
 
 class FSDDDataset(Dataset):
-    def __init__(self, data, max_length=100):
+    def __init__(self, data, speaker_to_label, max_length=100):
         self.data = []
         self.speaker_to_label = {}
-        label_counter = 0
+        self.speaker_to_label = speaker_to_label
     
         for speaker_id, samples in data.items():
-            if speaker_id not in self.speaker_to_label:
-                self.speaker_to_label[speaker_id] = label_counter
-                label_counter += 1
-        
-        for mfccs, _ in samples:  # Ignore the team_name label
-            if mfccs.shape[0] < max_length:
-                padding = max_length - mfccs.shape[0]
-                mfccs = np.pad(mfccs, ((0, padding), (0, 0)))
-            self.data.append((mfccs, self.speaker_to_label[speaker_id]))
+            for mfccs, _ in samples:  # Ignore the team_name label
+                if mfccs.shape[0] < max_length:
+                    padding = max_length - mfccs.shape[0]
+                    mfccs = np.pad(mfccs, ((0, padding), (0, 0)))
+                self.data.append((mfccs, self.speaker_to_label[speaker_id]))
     
     def __len__(self):
         return len(self.data)
     
     def __getitem__(self, index):
         mfccs, speaker_label = self.data[index]
-        return torch.tensor(mfccs, dtype=torch.float32), torch.tensor(speaker_label, dtyoe=torch.long)
+        return torch.tensor(mfccs, dtype=torch.float32), torch.tensor(speaker_label, dtype=torch.long)
 
-train_dataset = FSDDDataset(train_data)
-test_dataset = FSDDDataset(val_data)
 
-train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=True)
+def create_speaker_label_map(data):
+  label_counter = 0
+  speaker_to_label = {}
+  for speaker_id, _ in data.items():
+      if speaker_id not in speaker_to_label:
+          speaker_to_label[speaker_id] = label_counter
+          label_counter += 1
+  return speaker_to_label
+
+speaker_label_map = create_speaker_label_map(train_data)
+
+train_dataset = FSDDDataset(train_data, speaker_label_map)
+val_dataset = FSDDDataset(val_data, speaker_label_map)
+
+train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+val_dataloader = DataLoader(val_dataset, batch_size=2, shuffle=True)
+
