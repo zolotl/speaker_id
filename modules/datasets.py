@@ -15,9 +15,6 @@ class FSDDDataset(Dataset):
     
         for speaker_id, samples in data.items():
             for mfccs, _ in samples:  # Ignore the team_name label
-                if mfccs.shape[0] < max_length:
-                    padding = max_length - mfccs.shape[0]
-                    mfccs = np.pad(mfccs, ((0, padding), (0, 0)))
                 self.data.append((mfccs, self.speaker_to_label[speaker_id]))
     
     def __len__(self):
