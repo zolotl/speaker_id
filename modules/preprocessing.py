@@ -37,7 +37,7 @@ def mfcc_feature_extraction(signal, sr):
     # Concat deltaMFCC and delta2MFCC together
     delta_mfccs = librosa.feature.delta(mfccs)
     delta2_mfccs = librosa.feature.delta(delta_mfccs)
-    comprehensive_mfccs = np.squeeze(np.concatenate((mfccs, delta_mfccs, delta2_mfccs), axis=1))
+    comprehensive_mfccs = np.squeeze(np.concatenate((mfccs, delta_mfccs, delta2_mfccs), axis=0))
     
     return comprehensive_mfccs
 
@@ -61,7 +61,7 @@ def load_fsdd_data(directory, max_length=50):
                 augmented_audio = stretch(augmented_audio, rate_range=rate_range)
                 augmented_audio = pitch(augmented_audio, sampling_rate=sr, n_steps=pitch_range)
 
-                comprehensive_mfccs = mfcc_feature_extraction(augmented_audio, sr)
+                comprehensive_mfccs = mfcc_feature_extraction(augmented_audio.squeeze(0), sr)
 
                 #Pad or truncate MFCCs to the fixed length
                 if comprehensive_mfccs.shape[1] < max_length:

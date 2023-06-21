@@ -12,7 +12,7 @@ model = simpleDCNN(num_classes)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.0003)
 
-num_epochs = 100
+num_epochs = 70
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
