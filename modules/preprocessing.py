@@ -3,6 +3,7 @@ from tqdm import tqdm
 import os
 import librosa
 import numpy as np
+import scipy.signal
 
 from sklearn.model_selection import train_test_split
 
@@ -16,6 +17,30 @@ def split_audio_data(directory, audio_length=3, audio_overlap=1, start_sec=1):
         if filename.endswith('wav'):
             audio_splitter = SplitWavAudioMubin(directory, filename, target_folder=directory.replace('raw', 'processed')) # put into datasets/processed instead of datasets/raw
             audio_splitter.multiple_split(start_sec=start_sec, sec_per_split=audio_length, overlap=audio_overlap)
+
+
+def mfcc_feature_extraction(signal, sr):
+    # Set parameters
+    frame_size = int(0.025 * sr)
+    hop_size = int(0.01 * sr)
+    n_mfcc = 13
+    window = np.hanning(frame_size)
+
+    # Extract frames using windowing
+    frames = librosa.util.frame(signal, frame_length=frame_size, hop_length=hop_size, axis=0)
+    window_2d = scipy.signal.hamming(frame_size, sym=False).reshape(-1, 1)
+    frames = frames.copy() * window_2d.T
+
+    # Compute MFCC coefficients for each frame
+    mfccs = librosa.feature.mfcc(y=signal, sr=sr, n_mfcc=n_mfcc, hop_length=hop_size, n_fft=window.T.shape[0], window=window.T)
+
+    # Concat deltaMFCC and delta2MFCC together
+    delta_mfccs = librosa.feature.delta(mfccs)
+    delta2_mfccs = librosa.feature.delta(delta_mfccs)
+    comprehensive_mfccs = np.squeeze(np.concatenate((mfccs, delta_mfccs, delta2_mfccs), axis=1))
+    
+    return comprehensive_mfccs
+
 
 # Load and preprocess data
 def load_fsdd_data(directory, max_length=50):
@@ -36,10 +61,8 @@ def load_fsdd_data(directory, max_length=50):
                 augmented_audio = stretch(augmented_audio, rate_range=rate_range)
                 augmented_audio = pitch(augmented_audio, sampling_rate=sr, n_steps=pitch_range)
 
-                mfccs = librosa.feature.mfcc(y=augmented_audio,sr=sr, n_mfcc=13)
-                delta_mfccs = librosa.feature.delta(mfccs)
-                delta2_mfccs = librosa.feature.delta(delta_mfccs)
-                comprehensive_mfccs = np.squeeze(np.concatenate((mfccs, delta_mfccs, delta2_mfccs), axis=1))
+                comprehensive_mfccs = mfcc_feature_extraction(augmented_audio, sr)
+
                 #Pad or truncate MFCCs to the fixed length
                 if comprehensive_mfccs.shape[1] < max_length:
                     comprehensive_mfccs = np.pad(comprehensive_mfccs, ((0, 0), (0, max_length-comprehensive_mfccs.shape[1])), mode='constant')
